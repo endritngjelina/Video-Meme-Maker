@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Meme Maker Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .video-section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .controls-section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            max-height: fit-content;
+        }
+
+        .upload-area {
+            border: 3px dashed #e0e6ed;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .upload-area.dragover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .video-container {
+            position: relative;
+            margin-bottom: 20px;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .text-overlay {
+            position: absolute;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .range-input {
+            -webkit-appearance: none;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+        }
+
+        .range-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #667eea;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .time-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f7fafc;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #edf2f7;
+        }
+
+        .text-style-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .color-input {
+            height: 40px;
+            padding: 0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .export-section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .quality-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .quality-option {
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quality-option:hover {
+            border-color: #667eea;
+        }
+
+        .quality-option.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .timeline {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 12px;
+        }
+
+        .timeline-track {
+            height: 40px;
+            background: #e2e8f0;
+            border-radius: 20px;
+            position: relative;
+            margin: 10px 0;
+        }
+
+        .timeline-handle {
+            position: absolute;
+            width: 20px;
+            height: 40px;
+            background: #667eea;
+            border-radius: 10px;
+            cursor: pointer;
+            top: 0;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .filter-btn {
+            padding: 10px;
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        .canvas-container {
+            position: relative;
+            display: none;
+        }
+
+        #renderCanvas {
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎬 Video Meme Maker Pro</h1>
+            <p>Create professional memes with advanced video editing tools</p>
+        </div>
+
+        <div class="main-content">
+            <div class="video-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📁</div>
+                    <h3>Drop your video here or click to browse</h3>
+                    <p>Supports MP4, WebM, AVI • Max 100MB</p>
+                    <input type="file" id="videoInput" accept="video/*" style="display: none;">
+                </div>
+
+                <div class="video-container" id="videoContainer" style="display: none;">
+                    <video id="videoPlayer" controls></video>
+                    <div class="text-overlay" id="topText"></div>
+                    <div class="text-overlay" id="bottomText"></div>
+                </div>
+
+                <div class="canvas-container">
+                    <canvas id="renderCanvas"></canvas>
+                </div>
+
+                <div class="timeline" id="timeline" style="display: none;">
+                    <label>Timeline Control</label>
+                    <div class="timeline-track">
+                        <div class="timeline-handle" id="startHandle" style="left: 0%;"></div>
+                        <div class="timeline-handle" id="endHandle" style="left: 100%; margin-left: -20px;"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                        <span id="startTime">0:00</span>
+                        <span id="endTime">0:00</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-section">
+                <div class="control-group">
+                    <label>Top Text</label>
+                    <textarea id="topTextInput" placeholder="Enter top text..." rows="2"></textarea>
+                </div>
+
+                <div class="control-group">
+                    <label>Bottom Text</label>
+                    <textarea id="bottomTextInput" placeholder="Enter bottom text..." rows="2"></textarea>
+                </div>
+
+                <div class="control-group">
+                    <label>Font Settings</label>
+                    <div class="text-style-grid">
+                        <select id="fontFamily">
+                            <option value="Impact">Impact</option>
+                            <option value="Arial Black">Arial Black</option>
+                            <option value="Helvetica">Helvetica</option>
+                            <option value="Comic Sans MS">Comic Sans</option>
+                        </select>
+                        <input type="range" id="fontSize" class="range-input" min="20" max="80" value="40">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Text Colors</label>
+                    <div class="text-style-grid">
+                        <input type="color" id="textColor" class="color-input" value="#ffffff">
+                        <input type="color" id="strokeColor" class="color-input" value="#000000">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Video Filters</label>
+                    <div class="filters-grid">
+                        <div class="filter-btn active" data-filter="none">None</div>
+                        <div class="filter-btn" data-filter="sepia">Sepia</div>
+                        <div class="filter-btn" data-filter="grayscale">B&W</div>
+                        <div class="filter-btn" data-filter="blur">Blur</div>
+                        <div class="filter-btn" data-filter="brightness">Bright</div>
+                        <div class="filter-btn" data-filter="contrast">Contrast</div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Playback Speed</label>
+                    <select id="playbackSpeed">
+                        <option value="0.25">0.25x</option>
+                        <option value="0.5">0.5x</option>
+                        <option value="1" selected>1x</option>
+                        <option value="1.25">1.25x</option>
+                        <option value="1.5">1.5x</option>
+                        <option value="2">2x</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>Clip Duration</label>
+                    <div class="time-controls">
+                        <input type="number" id="startTimeInput" placeholder="Start (s)" step="0.1" min="0">
+                        <input type="number" id="endTimeInput" placeholder="End (s)" step="0.1" min="0">
+                    </div>
+                </div>
+
+                <button class="btn btn-secondary" onclick="resetVideo()" style="width: 100%; margin-bottom: 15px;">
+                    🔄 Reset All
+                </button>
+            </div>
+        </div>
+
+        <div class="export-section">
+            <h3>Export Your Meme</h3>
+            <p>Choose quality and export format</p>
+
+            <div class="quality-selector">
+                <div class="quality-option selected" data-quality="720">
+                    <strong>720p HD</strong><br>
+                    <small>Good Quality</small>
+                </div>
+                <div class="quality-option" data-quality="1080">
+                    <strong>1080p FHD</strong><br>
+                    <small>High Quality</small>
+                </div>
+                <div class="quality-option" data-quality="480">
+                    <strong>480p</strong><br>
+                    <small>Smaller File</small>
+                </div>
+            </div>
+
+            <div class="progress-bar" id="progressBar" style="display: none;">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <button class="btn btn-primary" onclick="exportVideo()" style="width: 100%; margin-bottom: 15px;">
+                🎬 Export Video
+            </button>
+
+            <button class="btn btn-secondary" onclick="exportGif()" style="width: 100%;">
+                🖼️ Export as GIF
+            </button>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Processing your meme...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class VideoMemeEditor {
+            constructor() {
+                this.video = null;
+                this.canvas = null;
+                this.ctx = null;
+                this.isRecording = false;
+                this.mediaRecorder = null;
+                this.recordedChunks = [];
+                this.currentFilter = 'none';
+                this.startTime = 0;
+                this.endTime = 0;
+                
+                this.initializeElements();
+                this.setupEventListeners();
+            }
+
+            initializeElements() {
+                this.video = document.getElementById('videoPlayer');
+                this.canvas = document.getElementById('renderCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                
+                // Text elements
+                this.topTextEl = document.getElementById('topText');
+                this.bottomTextEl = document.getElementById('bottomText');
+                
+                // Input elements
+                this.topTextInput = document.getElementById('topTextInput');
+                this.bottomTextInput = document.getElementById('bottomTextInput');
+                this.fontFamily = document.getElementById('fontFamily');
+                this.fontSize = document.getElementById('fontSize');
+                this.textColor = document.getElementById('textColor');
+                this.strokeColor = document.getElementById('strokeColor');
+                this.playbackSpeed = document.getElementById('playbackSpeed');
+                this.startTimeInput = document.getElementById('startTimeInput');
+                this.endTimeInput = document.getElementById('endTimeInput');
+            }
+
+            setupEventListeners() {
+                // File upload
+                const uploadArea = document.getElementById('uploadArea');
+                const videoInput = document.getElementById('videoInput');
+
+                uploadArea.addEventListener('click', () => videoInput.click());
+                uploadArea.addEventListener('dragover', this.handleDragOver.bind(this));
+                uploadArea.addEventListener('drop', this.handleDrop.bind(this));
+                videoInput.addEventListener('change', this.handleFileSelect.bind(this));
+
+                // Text controls
+                this.topTextInput.addEventListener('input', this.updateText.bind(this));
+                this.bottomTextInput.addEventListener('input', this.updateText.bind(this));
+                this.fontFamily.addEventListener('change', this.updateTextStyle.bind(this));
+                this.fontSize.addEventListener('input', this.updateTextStyle.bind(this));
+                this.textColor.addEventListener('change', this.updateTextStyle.bind(this));
+                this.strokeColor.addEventListener('change', this.updateTextStyle.bind(this));
+
+                // Video controls
+                this.playbackSpeed.addEventListener('change', this.updatePlaybackSpeed.bind(this));
+                this.startTimeInput.addEventListener('change', this.updateTimeRange.bind(this));
+                this.endTimeInput.addEventListener('change', this.updateTimeRange.bind(this));
+
+                // Filter controls
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.applyFilter(e.target.dataset.filter, e.target));
+                });
+
+                // Quality selector
+                document.querySelectorAll('.quality-option').forEach(option => {
+                    option.addEventListener('click', (e) => this.selectQuality(e.currentTarget));
+                });
+
+                // Video events
+                this.video.addEventListener('loadedmetadata', this.onVideoLoaded.bind(this));
+                this.video.addEventListener('timeupdate', this.onTimeUpdate.bind(this));
+            }
+
+            handleDragOver(e) {
+                e.preventDefault();
+                e.currentTarget.classList.add('dragover');
+            }
+
+            handleDrop(e) {
+                e.preventDefault();
+                e.currentTarget.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0 && files[0].type.startsWith('video/')) {
+                    this.loadVideo(files[0]);
+                }
+            }
+
+            handleFileSelect(e) {
+                const file = e.target.files[0];
+                if (file && file.type.startsWith('video/')) {
+                    this.loadVideo(file);
+                }
+            }
+
+            loadVideo(file) {
+                const url = URL.createObjectURL(file);
+                this.video.src = url;
+                
+                document.getElementById('uploadArea').style.display = 'none';
+                document.getElementById('videoContainer').style.display = 'block';
+                document.getElementById('timeline').style.display = 'block';
+            }
+
+            onVideoLoaded() {
+                this.endTime = this.video.duration;
+                this.endTimeInput.value = Math.round(this.video.duration * 10) / 10;
+                this.startTimeInput.max = this.video.duration;
+                this.endTimeInput.max = this.video.duration;
+                
+                // Setup canvas
+                this.canvas.width = this.video.videoWidth;
+                this.canvas.height = this.video.videoHeight;
+                
+                document.getElementById('endTime').textContent = this.formatTime(this.video.duration);
+                this.updateText();
+            }
+
+            onTimeUpdate() {
+                const currentTime = this.video.currentTime;
+                if (currentTime >= this.endTime && this.endTime > 0) {
+                    this.video.currentTime = this.startTime;
+                }
+            }
+
+            updateText() {
+                const topText = this.topTextInput.value.toUpperCase();
+                const bottomText = this.bottomTextInput.value.toUpperCase();
+                
+                this.topTextEl.textContent = topText;
+                this.bottomTextEl.textContent = bottomText;
+                
+                this.updateTextStyle();
+            }
+
+            updateTextStyle() {
+                const fontFamily = this.fontFamily.value;
+                const fontSize = this.fontSize.value;
+                const textColor = this.textColor.value;
+                const strokeColor = this.strokeColor.value;
+                
+                const textStyle = `
+                    font-family: ${fontFamily};
+                    font-size: ${fontSize}px;
+                    color: ${textColor};
+                    text-shadow: 
+                        2px 2px 0 ${strokeColor},
+                        -2px -2px 0 ${strokeColor},
+                        2px -2px 0 ${strokeColor},
+                        -2px 2px 0 ${strokeColor};
+                `;
+                
+                this.topTextEl.style.cssText = `
+                    position: absolute;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    width: 90%;
+                    ${textStyle}
+                `;
+                
+                this.bottomTextEl.style.cssText = `
+                    position: absolute;
+                    bottom: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    width: 90%;
+                    ${textStyle}
+                `;
+            }
+
+            updatePlaybackSpeed() {
+                this.video.playbackRate = parseFloat(this.playbackSpeed.value);
+            }
+
+            updateTimeRange() {
+                this.startTime = parseFloat(this.startTimeInput.value) || 0;
+                this.endTime = parseFloat(this.endTimeInput.value) || this.video.duration;
+                
+                if (this.startTime >= this.endTime) {
+                    this.startTime = Math.max(0, this.endTime - 1);
+                    this.startTimeInput.value = this.startTime;
+                }
+                
+                document.getElementById('startTime').textContent = this.formatTime(this.startTime);
+                document.getElementById('endTime').textContent = this.formatTime(this.endTime);
+                
+                if (this.video.currentTime < this.startTime || this.video.currentTime > this.endTime) {
+                    this.video.currentTime = this.startTime;
+                }
+            }
+
+            applyFilter(filterName, element) {
+                document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                element.classList.add('active');
+                this.currentFilter = filterName;
+                
+                let filterStyle = '';
+                switch (filterName) {
+                    case 'sepia':
+                        filterStyle = 'sepia(100%)';
+                        break;
+                    case 'grayscale':
+                        filterStyle = 'grayscale(100%)';
+                        break;
+                    case 'blur':
+                        filterStyle = 'blur(2px)';
+                        break;
+                    case 'brightness':
+                        filterStyle = 'brightness(150%)';
+                        break;
+                    case 'contrast':
+                        filterStyle = 'contrast(150%)';
+                        break;
+                    default:
+                        filterStyle = 'none';
+                }
+                
+                this.video.style.filter = filterStyle;
+            }
+
+            selectQuality(element) {
+                document.querySelectorAll('.quality-option').forEach(opt => opt.classList.remove('selected'));
+                element.classList.add('selected');
+            }
+
+            renderFrame() {
+                if (!this.video || !this.canvas) return;
+                
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Apply filter to canvas context
+                this.ctx.filter = this.video.style.filter || 'none';
+                this.ctx.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height);
+                this.ctx.filter = 'none';
+                
+                // Draw text overlays
+                this.drawText();
+            }
+
+            drawText() {
+                const topText = this.topTextInput.value.toUpperCase();
+                const bottomText = this.bottomTextInput.value.toUpperCase();
+                const fontSize = parseInt(this.fontSize.value);
+                const fontFamily = this.fontFamily.value;
+                
+                this.ctx.font = `bold ${fontSize}px ${fontFamily}`;
+                this.ctx.textAlign = 'center';
+                this.ctx.fillStyle = this.textColor.value;
+                this.ctx.strokeStyle = this.strokeColor.value;
+                this.ctx.lineWidth = 3;
+                
+                if (topText) {
+                    this.ctx.strokeText(topText, this.canvas.width / 2, fontSize + 20);
+                    this.ctx.fillText(topText, this.canvas.width / 2, fontSize + 20);
+                }
+                
+                if (bottomText) {
+                    this.ctx.strokeText(bottomText, this.canvas.width / 2, this.canvas.height - 20);
+                    this.ctx.fillText(bottomText, this.canvas.width / 2, this.canvas.height - 20);
+                }
+            }
+
+            async exportVideo() {
+                if (!this.video) return;
+                
+                const loading = document.getElementById('loading');
+                const progressBar = document.getElementById('progressBar');
+                const progressFill = document.getElementById('progressFill');
+                
+                loading.style.display = 'block';
+                progressBar.style.display = 'block';
+                
+                try {
+                    // Setup canvas stream
+                    const stream = this.canvas.captureStream(30);
+                    const audioTrack = this.video.captureStream().getAudioTracks()[0];
+                    if (audioTrack) stream.addTrack(audioTrack);
+                    
+                    this.recordedChunks = [];
+                    this.mediaRecorder = new MediaRecorder(stream, {
+                        mimeType: 'video/webm;codecs=vp9'
+                    });
+                    
+                    this.mediaRecorder.ondataavailable = (event) => {
+                        if (event.data.size > 0) {
+                            this.recordedChunks.push(event.data);
+                        }
+                    };
+                    
+                    this.mediaRecorder.onstop = () => {
+                        const blob = new Blob(this.recordedChunks, { type: 'video/webm' });
+                        this.downloadBlob(blob, 'meme-video.webm');
+                        loading.style.display = 'none';
+                        progressBar.style.display = 'none';
+                    };
+                    
+                    // Start recording
+                    this.mediaRecorder.start();
+                    
+                    // Record the specified time range
+                    this.video.currentTime = this.startTime;
+                    await this.video.play();
+                    
+                    const duration = (this.endTime - this.startTime) * 1000;
+                    const interval = setInterval(() => {
+                        this.renderFrame();
+                        const progress = ((this.video.currentTime - this.startTime) / (this.endTime - this.startTime)) * 100;
+                        progressFill.style.width = `${Math.min(progress, 100)}%`;
+                    }, 33);
+                    
+                    setTimeout(() => {
+                        clearInterval(interval);
+                        this.mediaRecorder.stop();
+                        this.video.pause();
+                    }, duration);
+                    
+                } catch (error) {
+                    console.error('Export failed:', error);
+                    alert('Export failed. Please try again.');
+                    loading.style.display = 'none';
+                    progressBar.style.display = 'none';
+                }
+            }
+
+            downloadBlob(blob, filename) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            formatTime(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${mins}:${secs.toString().padStart(2, '0')}`;
+            }
+        }
+
+        // Global functions
+        function resetVideo() {
+            location.reload();
+        }
+
+        function exportGif() {
+            alert('GIF export feature would require additional libraries like gif.js. This is a demonstration of the UI and core video functionality.');
+        }
+
+        // Initialize the app
+        const editor = new VideoMemeEditor();
+    </script>
+</body>
+</html>
