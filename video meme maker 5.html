@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Meme Maker Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --surface: rgba(255, 255, 255, 0.95);
+            --surface-elevated: rgba(255, 255, 255, 0.98);
+            --text-primary: #1a202c;
+            --text-secondary: #4a5568;
+            --border-light: rgba(255, 255, 255, 0.2);
+            --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --shadow-elevated: 0 16px 48px rgba(0, 0, 0, 0.15);
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--primary-gradient);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .header h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #fff, #e2e8f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 400;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 32px;
+            margin-bottom: 32px;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .video-section {
+            background: var(--surface-elevated);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-light);
+            border-radius: var(--border-radius);
+            padding: 32px;
+            box-shadow: var(--shadow-elevated);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-gradient);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+
+        .video-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .controls-section {
+            background: var(--surface-elevated);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-light);
+            border-radius: var(--border-radius);
+            padding: 32px;
+            box-shadow: var(--shadow-elevated);
+            max-height: fit-content;
+            position: sticky;
+            top: 20px;
+            transition: var(--transition);
+        }
+
+        .controls-section:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+        }
+
+        .upload-area {
+            border: 3px dashed rgba(102, 126, 234, 0.3);
+            border-radius: 16px;
+            padding: 48px 32px;
+            text-align: center;
+            margin-bottom: 24px;
+            transition: var(--transition);
+            cursor: pointer;
+            background: linear-gradient(145deg, rgba(255,255,255,0.8), rgba(248,249,255,0.9));
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(102, 126, 234, 0.05), transparent);
+            transform: rotate(45deg);
+            transition: var(--transition);
+            opacity: 0;
+        }
+
+        .upload-area:hover::before {
+            opacity: 1;
+            animation: shimmer 2s infinite;
+        }
+
+        .upload-area:hover {
+            border-color: #667eea;
+            background: linear-gradient(145deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2);
+        }
+
+        .upload-area.dragover {
+            border-color: #667eea;
+            background: linear-gradient(145deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 56px;
+            margin-bottom: 20px;
+            opacity: 0.8;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .upload-area h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .upload-area p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .video-container {
+            position: relative;
+            margin-bottom: 20px;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .text-overlay {
+            position: absolute;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 
+                3px 3px 0 #000, 
+                -3px -3px 0 #000, 
+                3px -3px 0 #000, 
+                -3px 3px 0 #000,
+                0 0 10px rgba(0,0,0,0.8);
+            pointer-events: none;
+            z-index: 10;
+            transition: var(--transition);
+            animation: textGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes textGlow {
+            from {
+                text-shadow: 
+                    3px 3px 0 #000, 
+                    -3px -3px 0 #000, 
+                    3px -3px 0 #000, 
+                    -3px 3px 0 #000,
+                    0 0 10px rgba(0,0,0,0.8);
+            }
+            to {
+                text-shadow: 
+                    3px 3px 0 #000, 
+                    -3px -3px 0 #000, 
+                    3px -3px 0 #000, 
+                    -3px 3px 0 #000,
+                    0 0 20px rgba(0,0,0,0.9),
+                    0 0 30px rgba(255,255,255,0.3);
+            }
+        }
+
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid rgba(226, 232, 240, 0.8);
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-1px);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .range-input {
+            -webkit-appearance: none;
+            height: 8px;
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.2), rgba(226, 232, 240, 0.8));
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .range-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            transition: var(--transition);
+        }
+
+        .range-input::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .time-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+            font-family: inherit;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: rgba(247, 250, 252, 0.9);
+            color: var(--text-secondary);
+            border: 2px solid rgba(226, 232, 240, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(237, 242, 247, 1);
+            border-color: rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .text-style-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .color-input {
+            height: 40px;
+            padding: 0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .export-section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .quality-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .quality-option {
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quality-option:hover {
+            border-color: #667eea;
+        }
+
+        .quality-option.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .timeline {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 12px;
+        }
+
+        .timeline-track {
+            height: 48px;
+            background: linear-gradient(135deg, rgba(226, 232, 240, 0.8), rgba(237, 242, 247, 0.9));
+            border-radius: 24px;
+            position: relative;
+            margin: 16px 0;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .timeline-track::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, 
+                rgba(102, 126, 234, 0.1) 0%, 
+                rgba(102, 126, 234, 0.05) 50%, 
+                rgba(102, 126, 234, 0.1) 100%);
+            animation: shimmer 3s infinite;
+        }
+
+        .timeline-handle {
+            position: absolute;
+            width: 28px;
+            height: 48px;
+            background: var(--primary-gradient);
+            border-radius: 14px;
+            cursor: grab;
+            top: 0;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            border: 3px solid rgba(255, 255, 255, 0.9);
+        }
+
+        .timeline-handle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .timeline-handle:active {
+            cursor: grabbing;
+            transform: scale(0.95);
+        }
+
+        .timeline-handle::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 4px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 2px;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .filter-btn {
+            padding: 10px;
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Glass morphism effects */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Enhanced scrollbars */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-gradient);
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+        }
+
+        /* Video controls enhancement */
+        video::-webkit-media-controls-panel {
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+        }
+
+        /* Enhanced mobile responsiveness */
+        @media (max-width: 480px) {
+            .container {
+                padding: 12px;
+            }
+            
+            .upload-area {
+                padding: 24px 16px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .btn {
+                padding: 12px 20px;
+                font-size: 13px;
+            }
+            
+            .filters-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Loading states */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 48px;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(226, 232, 240, 0.3);
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 24px;
+        }
+
+        .loading p {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --surface: rgba(45, 55, 72, 0.95);
+                --surface-elevated: rgba(45, 55, 72, 0.98);
+                --text-primary: #f7fafc;
+                --text-secondary: #e2e8f0;
+            }
+            
+            .upload-area {
+                background: linear-gradient(145deg, rgba(45, 55, 72, 0.8), rgba(74, 85, 104, 0.9));
+                border-color: rgba(102, 126, 234, 0.4);
+            }
+            
+            input, select, textarea {
+                background: rgba(45, 55, 72, 0.9);
+                color: #f7fafc;
+                border-color: rgba(226, 232, 240, 0.3);
+            }
+        }
+
+        .canvas-container {
+            position: relative;
+            display: none;
+        }
+
+        #renderCanvas {
+            border-radius: 12px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .video-container {
+            position: relative;
+            margin-bottom: 24px;
+            background: #000;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
+            transition: var(--transition);
+        }
+
+        .video-container:hover {
+            box-shadow: var(--shadow-elevated);
+        }
+
+        .timeline {
+            margin: 24px 0;
+            padding: 24px;
+            background: rgba(247, 250, 252, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid rgba(226, 232, 240, 0.5);
+        }
+
+        .timeline label {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        /* Enhanced micro-interactions */
+        .btn:not(:disabled):hover {
+            animation: buttonPulse 0.3s ease;
+        }
+
+        @keyframes buttonPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        /* Enhanced focus states */
+        *:focus-visible {
+            outline: 2px solid #667eea;
+            outline-offset: 2px;
+        }
+
+        /* Tooltip system */
+        [data-tooltip] {
+            position: relative;
+        }
+
+        [data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 1000;
+            animation: tooltipFade 0.2s ease;
+        }
+
+        [data-tooltip]:hover::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(2px);
+            border: 4px solid transparent;
+            border-top-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+        }
+
+        @keyframes tooltipFade {
+            from { opacity: 0; transform: translateX(-50%) translateY(5px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        /* Enhanced loading states */
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            position: relative;
+        }
+
+        .btn:disabled::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 16px;
+            height: 16px;
+            margin: -8px 0 0 -8px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Status indicators */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-indicator.success {
+            background: rgba(72, 187, 120, 0.1);
+            color: #38a169;
+            border: 1px solid rgba(72, 187, 120, 0.2);
+        }
+
+        .status-indicator.warning {
+            background: rgba(237, 137, 54, 0.1);
+            color: #dd6b20;
+            border: 1px solid rgba(237, 137, 54, 0.2);
+        }
+
+        .status-indicator.error {
+            background: rgba(245, 101, 101, 0.1);
+            color: #e53e3e;
+            border: 1px solid rgba(245, 101, 101, 0.2);
+        }
+
+        .status-indicator::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎬 Video Meme Maker Pro</h1>
+            <p>Create professional memes with advanced video editing tools</p>
+        </div>
+
+        <div class="main-content">
+            <div class="video-section">
+                <div class="upload-area" id="uploadArea" data-tooltip="Click to browse or drag & drop video files">
+                    <div class="upload-icon">🎬</div>
+                    <h3>Drop your video here or click to browse</h3>
+                    <p>Supports MP4, WebM, AVI • Max 100MB</p>
+                    <input type="file" id="videoInput" accept="video/*" style="display: none;">
+                </div>
+
+                <div class="video-container" id="videoContainer" style="display: none;">
+                    <video id="videoPlayer" controls></video>
+                    <div class="text-overlay" id="topText"></div>
+                    <div class="text-overlay" id="bottomText"></div>
+                </div>
+
+                <div class="canvas-container">
+                    <canvas id="renderCanvas"></canvas>
+                </div>
+
+                <div class="timeline" id="timeline" style="display: none;">
+                    <label>Timeline Control</label>
+                    <div class="timeline-track">
+                        <div class="timeline-handle" id="startHandle" style="left: 0%;"></div>
+                        <div class="timeline-handle" id="endHandle" style="left: 100%; margin-left: -20px;"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                        <span id="startTime">0:00</span>
+                        <span id="endTime">0:00</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-section">
+                <div class="control-group">
+                    <label>📝 Top Text</label>
+                    <textarea id="topTextInput" placeholder="Enter top text..." rows="2" data-tooltip="Add your meme's top caption"></textarea>
+                </div>
+
+                <div class="control-group">
+                    <label>📝 Bottom Text</label>
+                    <textarea id="bottomTextInput" placeholder="Enter bottom text..." rows="2" data-tooltip="Add your meme's bottom caption"></textarea>
+                </div>
+
+                <div class="control-group">
+                    <label>🎨 Font Settings</label>
+                    <div class="text-style-grid">
+                        <select id="fontFamily" data-tooltip="Choose font family">
+                            <option value="Impact">Impact</option>
+                            <option value="Arial Black">Arial Black</option>
+                            <option value="Helvetica">Helvetica</option>
+                            <option value="Comic Sans MS">Comic Sans</option>
+                            <option value="Times New Roman">Times New Roman</option>
+                            <option value="Courier New">Courier New</option>
+                        </select>
+                        <input type="range" id="fontSize" class="range-input" min="20" max="100" value="40" data-tooltip="Adjust font size">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>🎨 Text Colors</label>
+                    <div class="text-style-grid">
+                        <input type="color" id="textColor" class="color-input" value="#ffffff" data-tooltip="Text color">
+                        <input type="color" id="strokeColor" class="color-input" value="#000000" data-tooltip="Text outline color">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>🎭 Video Filters</label>
+                    <div class="filters-grid">
+                        <div class="filter-btn active" data-filter="none" data-tooltip="No filter">None</div>
+                        <div class="filter-btn" data-filter="sepia" data-tooltip="Vintage sepia effect">Sepia</div>
+                        <div class="filter-btn" data-filter="grayscale" data-tooltip="Black & white">B&W</div>
+                        <div class="filter-btn" data-filter="blur" data-tooltip="Blur effect">Blur</div>
+                        <div class="filter-btn" data-filter="brightness" data-tooltip="Increase brightness">Bright</div>
+                        <div class="filter-btn" data-filter="contrast" data-tooltip="High contrast">Contrast</div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>⚡ Playback Speed</label>
+                    <select id="playbackSpeed" data-tooltip="Control video playback speed">
+                        <option value="0.25">0.25x (Slow)</option>
+                        <option value="0.5">0.5x (Half)</option>
+                        <option value="1" selected>1x (Normal)</option>
+                        <option value="1.25">1.25x (Fast)</option>
+                        <option value="1.5">1.5x (Faster)</option>
+                        <option value="2">2x (Double)</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>✂️ Clip Duration</label>
+                    <div class="time-controls">
+                        <input type="number" id="startTimeInput" placeholder="Start (s)" step="0.1" min="0" data-tooltip="Start time in seconds">
+                        <input type="number" id="endTimeInput" placeholder="End (s)" step="0.1" min="0" data-tooltip="End time in seconds">
+                    </div>
+                </div>
+
+                <button class="btn btn-secondary" onclick="resetVideo()" style="width: 100%; margin-bottom: 15px;" data-tooltip="Reset all settings">
+                    🔄 Reset All
+                </button>
+            </div>
+        </div>
+
+        <div class="export-section">
+            <h3>Export Your Meme</h3>
+            <p>Choose quality and export format</p>
+
+            <div class="quality-selector">
+                <div class="quality-option selected" data-quality="720" data-tooltip="Good quality, smaller file size">
+                    <strong>720p HD</strong><br>
+                    <small>Good Quality</small>
+                </div>
+                <div class="quality-option" data-quality="1080" data-tooltip="High quality, larger file size">
+                    <strong>1080p FHD</strong><br>
+                    <small>High Quality</small>
+                </div>
+                <div class="quality-option" data-quality="480" data-tooltip="Lower quality, smallest file">
+                    <strong>480p</strong><br>
+                    <small>Smaller File</small>
+                </div>
+            </div>
+
+            <div class="progress-bar" id="progressBar" style="display: none;">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <button class="btn btn-primary" onclick="exportVideo()" style="width: 100%; margin-bottom: 16px;" data-tooltip="Export as high-quality video file">
+                🎬 Export Video
+            </button>
+
+            <button class="btn btn-secondary" onclick="exportGif()" style="width: 100%;" data-tooltip="Convert to animated GIF">
+                🖼️ Export as GIF
+            </button>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Processing your meme...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class VideoMemeEditor {
+            constructor() {
+                this.video = null;
+                this.canvas = null;
+                this.ctx = null;
+                this.isRecording = false;
+                this.mediaRecorder = null;
+                this.recordedChunks = [];
+                this.currentFilter = 'none';
+                this.startTime = 0;
+                this.endTime = 0;
+                
+                this.initializeElements();
+                this.setupEventListeners();
+            }
+
+            initializeElements() {
+                this.video = document.getElementById('videoPlayer');
+                this.canvas = document.getElementById('renderCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                
+                // Text elements
+                this.topTextEl = document.getElementById('topText');
+                this.bottomTextEl = document.getElementById('bottomText');
+                
+                // Input elements
+                this.topTextInput = document.getElementById('topTextInput');
+                this.bottomTextInput = document.getElementById('bottomTextInput');
+                this.fontFamily = document.getElementById('fontFamily');
+                this.fontSize = document.getElementById('fontSize');
+                this.textColor = document.getElementById('textColor');
+                this.strokeColor = document.getElementById('strokeColor');
+                this.playbackSpeed = document.getElementById('playbackSpeed');
+                this.startTimeInput = document.getElementById('startTimeInput');
+                this.endTimeInput = document.getElementById('endTimeInput');
+            }
+
+            setupEventListeners() {
+                // File upload
+                const uploadArea = document.getElementById('uploadArea');
+                const videoInput = document.getElementById('videoInput');
+
+                uploadArea.addEventListener('click', () => videoInput.click());
+                uploadArea.addEventListener('dragover', this.handleDragOver.bind(this));
+                uploadArea.addEventListener('drop', this.handleDrop.bind(this));
+                videoInput.addEventListener('change', this.handleFileSelect.bind(this));
+
+                // Text controls
+                this.topTextInput.addEventListener('input', this.updateText.bind(this));
+                this.bottomTextInput.addEventListener('input', this.updateText.bind(this));
+                this.fontFamily.addEventListener('change', this.updateTextStyle.bind(this));
+                this.fontSize.addEventListener('input', this.updateTextStyle.bind(this));
+                this.textColor.addEventListener('change', this.updateTextStyle.bind(this));
+                this.strokeColor.addEventListener('change', this.updateTextStyle.bind(this));
+
+                // Video controls
+                this.playbackSpeed.addEventListener('change', this.updatePlaybackSpeed.bind(this));
+                this.startTimeInput.addEventListener('change', this.updateTimeRange.bind(this));
+                this.endTimeInput.addEventListener('change', this.updateTimeRange.bind(this));
+
+                // Filter controls
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.applyFilter(e.target.dataset.filter, e.target));
+                });
+
+                // Quality selector
+                document.querySelectorAll('.quality-option').forEach(option => {
+                    option.addEventListener('click', (e) => this.selectQuality(e.currentTarget));
+                });
+
+                // Video events
+                this.video.addEventListener('loadedmetadata', this.onVideoLoaded.bind(this));
+                this.video.addEventListener('timeupdate', this.onTimeUpdate.bind(this));
+            }
+
+            handleDragOver(e) {
+                e.preventDefault();
+                e.currentTarget.classList.add('dragover');
+            }
+
+            handleDrop(e) {
+                e.preventDefault();
+                e.currentTarget.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0 && files[0].type.startsWith('video/')) {
+                    this.loadVideo(files[0]);
+                }
+            }
+
+            handleFileSelect(e) {
+                const file = e.target.files[0];
+                if (file && file.type.startsWith('video/')) {
+                    this.loadVideo(file);
+                }
+            }
+
+            loadVideo(file) {
+                const url = URL.createObjectURL(file);
+                this.video.src = url;
+                
+                document.getElementById('uploadArea').style.display = 'none';
+                document.getElementById('videoContainer').style.display = 'block';
+                document.getElementById('timeline').style.display = 'block';
+            }
+
+            onVideoLoaded() {
+                this.endTime = this.video.duration;
+                this.endTimeInput.value = Math.round(this.video.duration * 10) / 10;
+                this.startTimeInput.max = this.video.duration;
+                this.endTimeInput.max = this.video.duration;
+                
+                // Setup canvas
+                this.canvas.width = this.video.videoWidth;
+                this.canvas.height = this.video.videoHeight;
+                
+                document.getElementById('endTime').textContent = this.formatTime(this.video.duration);
+                this.updateText();
+            }
+
+            onTimeUpdate() {
+                const currentTime = this.video.currentTime;
+                if (currentTime >= this.endTime && this.endTime > 0) {
+                    this.video.currentTime = this.startTime;
+                }
+            }
+
+            updateText() {
+                const topText = this.topTextInput.value.toUpperCase();
+                const bottomText = this.bottomTextInput.value.toUpperCase();
+                
+                this.topTextEl.textContent = topText;
+                this.bottomTextEl.textContent = bottomText;
+                
+                this.updateTextStyle();
+            }
+
+            updateTextStyle() {
+                const fontFamily = this.fontFamily.value;
+                const fontSize = this.fontSize.value;
+                const textColor = this.textColor.value;
+                const strokeColor = this.strokeColor.value;
+                
+                const textStyle = `
+                    font-family: ${fontFamily};
+                    font-size: ${fontSize}px;
+                    color: ${textColor};
+                    text-shadow: 
+                        2px 2px 0 ${strokeColor},
+                        -2px -2px 0 ${strokeColor},
+                        2px -2px 0 ${strokeColor},
+                        -2px 2px 0 ${strokeColor};
+                `;
+                
+                this.topTextEl.style.cssText = `
+                    position: absolute;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    width: 90%;
+                    ${textStyle}
+                `;
+                
+                this.bottomTextEl.style.cssText = `
+                    position: absolute;
+                    bottom: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    width: 90%;
+                    ${textStyle}
+                `;
+            }
+
+            updatePlaybackSpeed() {
+                this.video.playbackRate = parseFloat(this.playbackSpeed.value);
+            }
+
+            updateTimeRange() {
+                this.startTime = parseFloat(this.startTimeInput.value) || 0;
+                this.endTime = parseFloat(this.endTimeInput.value) || this.video.duration;
+                
+                if (this.startTime >= this.endTime) {
+                    this.startTime = Math.max(0, this.endTime - 1);
+                    this.startTimeInput.value = this.startTime;
+                }
+                
+                document.getElementById('startTime').textContent = this.formatTime(this.startTime);
+                document.getElementById('endTime').textContent = this.formatTime(this.endTime);
+                
+                if (this.video.currentTime < this.startTime || this.video.currentTime > this.endTime) {
+                    this.video.currentTime = this.startTime;
+                }
+            }
+
+            applyFilter(filterName, element) {
+                document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                element.classList.add('active');
+                this.currentFilter = filterName;
+                
+                let filterStyle = '';
+                switch (filterName) {
+                    case 'sepia':
+                        filterStyle = 'sepia(100%)';
+                        break;
+                    case 'grayscale':
+                        filterStyle = 'grayscale(100%)';
+                        break;
+                    case 'blur':
+                        filterStyle = 'blur(2px)';
+                        break;
+                    case 'brightness':
+                        filterStyle = 'brightness(150%)';
+                        break;
+                    case 'contrast':
+                        filterStyle = 'contrast(150%)';
+                        break;
+                    default:
+                        filterStyle = 'none';
+                }
+                
+                this.video.style.filter = filterStyle;
+            }
+
+            selectQuality(element) {
+                document.querySelectorAll('.quality-option').forEach(opt => opt.classList.remove('selected'));
+                element.classList.add('selected');
+            }
+
+            renderFrame() {
+                if (!this.video || !this.canvas) return;
+                
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Apply filter to canvas context
+                this.ctx.filter = this.video.style.filter || 'none';
+                this.ctx.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height);
+                this.ctx.filter = 'none';
+                
+                // Draw text overlays
+                this.drawText();
+            }
+
+            drawText() {
+                const topText = this.topTextInput.value.toUpperCase();
+                const bottomText = this.bottomTextInput.value.toUpperCase();
+                const fontSize = parseInt(this.fontSize.value);
+                const fontFamily = this.fontFamily.value;
+                
+                this.ctx.font = `bold ${fontSize}px ${fontFamily}`;
+                this.ctx.textAlign = 'center';
+                this.ctx.fillStyle = this.textColor.value;
+                this.ctx.strokeStyle = this.strokeColor.value;
+                this.ctx.lineWidth = 3;
+                
+                if (topText) {
+                    this.ctx.strokeText(topText, this.canvas.width / 2, fontSize + 20);
+                    this.ctx.fillText(topText, this.canvas.width / 2, fontSize + 20);
+                }
+                
+                if (bottomText) {
+                    this.ctx.strokeText(bottomText, this.canvas.width / 2, this.canvas.height - 20);
+                    this.ctx.fillText(bottomText, this.canvas.width / 2, this.canvas.height - 20);
+                }
+            }
+
+            async exportVideo() {
+                if (!this.video) return;
+                
+                const loading = document.getElementById('loading');
+                const progressBar = document.getElementById('progressBar');
+                const progressFill = document.getElementById('progressFill');
+                
+                loading.style.display = 'block';
+                progressBar.style.display = 'block';
+                
+                try {
+                    // Setup canvas stream
+                    const stream = this.canvas.captureStream(30);
+                    const audioTrack = this.video.captureStream().getAudioTracks()[0];
+                    if (audioTrack) stream.addTrack(audioTrack);
+                    
+                    this.recordedChunks = [];
+                    this.mediaRecorder = new MediaRecorder(stream, {
+                        mimeType: 'video/webm;codecs=vp9'
+                    });
+                    
+                    this.mediaRecorder.ondataavailable = (event) => {
+                        if (event.data.size > 0) {
+                            this.recordedChunks.push(event.data);
+                        }
+                    };
+                    
+                    this.mediaRecorder.onstop = () => {
+                        const blob = new Blob(this.recordedChunks, { type: 'video/webm' });
+                        this.downloadBlob(blob, 'meme-video.webm');
+                        loading.style.display = 'none';
+                        progressBar.style.display = 'none';
+                    };
+                    
+                    // Start recording
+                    this.mediaRecorder.start();
+                    
+                    // Record the specified time range
+                    this.video.currentTime = this.startTime;
+                    await this.video.play();
+                    
+                    const duration = (this.endTime - this.startTime) * 1000;
+                    const interval = setInterval(() => {
+                        this.renderFrame();
+                        const progress = ((this.video.currentTime - this.startTime) / (this.endTime - this.startTime)) * 100;
+                        progressFill.style.width = `${Math.min(progress, 100)}%`;
+                    }, 33);
+                    
+                    setTimeout(() => {
+                        clearInterval(interval);
+                        this.mediaRecorder.stop();
+                        this.video.pause();
+                    }, duration);
+                    
+                } catch (error) {
+                    console.error('Export failed:', error);
+                    alert('Export failed. Please try again.');
+                    loading.style.display = 'none';
+                    progressBar.style.display = 'none';
+                }
+            }
+
+            downloadBlob(blob, filename) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            formatTime(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${mins}:${secs.toString().padStart(2, '0')}`;
+            }
+        }
+
+        // Global functions
+        function resetVideo() {
+            location.reload();
+        }
+
+        function exportGif() {
+            alert('GIF export feature would require additional libraries like gif.js. This is a demonstration of the UI and core video functionality.');
+        }
+
+        // Initialize the app
+        const editor = new VideoMemeEditor();
+    </script>
+</body>
+</html>
