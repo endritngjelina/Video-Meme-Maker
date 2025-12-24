@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Meme Maker Pro | Professional Edition</title>
+    <style>
+        /* Modern CSS Variables */
+        :root {
+            --primary: #7a4cff;
+            --primary-dark: #5e32e6;
+            --secondary: #ff6b6b;
+            --accent: #00c6ff;
+            --dark: #121212;
+            --darker: #0a0a0a;
+            --light: #f5f7fa;
+            --text: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            
+            --glass-bg: rgba(30, 30, 46, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            
+            --border-radius: 16px;
+            --border-radius-sm: 8px;
+            --border-radius-lg: 24px;
+            
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --transition-slow: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+            
+            --font-primary: 'Inter', 'Segoe UI', sans-serif;
+            --font-mono: 'Fira Code', 'SF Mono', monospace;
+        }
+
+        /* Modern CSS Reset */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Base Styles */
+        body {
+            font-family: var(--font-primary);
+            background: linear-gradient(135deg, var(--darker), #1a1a2e);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 {
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: clamp(1.8rem, 4vw, 2.2rem);
+            margin-bottom: 1.5rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        /* Glassmorphism Components */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            box-shadow: var(--glass-shadow);
+            transition: var(--transition);
+        }
+
+        .glass-panel:hover {
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+            transform: translateY(-5px);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border-radius: var(--border-radius-sm);
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            outline: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            transform: translateY(-3px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            border: 1px solid var(--glass-border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        .grid-cols-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .grid-cols-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+        }
+
+        /* Video Section */
+        .video-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--glass-border);
+            border-radius: var(--border-radius);
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition-slow);
+            position: relative;
+            overflow: hidden;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+
+        .upload-text h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-text p {
+            font-size: 1rem;
+        }
+
+        .video-container {
+            position: relative;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            background: #000;
+            aspect-ratio: 16/9;
+        }
+
+        #videoCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .watermark {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.8rem;
+        }
+
+        /* Controls Panel */
+        .controls-panel {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            font-size: 1.1rem;
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: var(--border-radius-sm);
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            color: var(--text);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(122, 76, 255, 0.2);
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .slider {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(122, 76, 255, 0.5);
+        }
+
+        .slider-value {
+            min-width: 50px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .color-picker {
+            width: 100%;
+            height: 40px;
+            border-radius: var(--border-radius-sm);
+            border: none;
+            cursor: pointer;
+            background: transparent;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            border: 1px solid var(--glass-border);
+            background: rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+        }
+
+        .checkbox:checked {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .export-section {
+            display: flex;
+            gap: 15px;
+            margin-top: 1rem;
+        }
+
+        .export-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: var(--border-radius-sm);
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .export-icon {
+            font-size: 1.5rem;
+        }
+
+        /* Features Section */
+        .features-section {
+            margin-top: 3rem;
+            padding: 2rem 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .feature-card {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(122, 76, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+
+        .feature-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.8rem;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 3rem;
+            padding: 2rem 0;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            color: white;
+            border-radius: var(--border-radius-sm);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transform: translateX(200%);
+            transition: transform 0.4s ease;
+            z-index: 1000;
+            border-left: 4px solid var(--primary);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grid-cols-3 {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .export-section {
+                flex-direction: column;
+            }
+            
+            .upload-area {
+                padding: 2rem;
+            }
+        }
+
+        /* Animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .floating {
+            animation: float 4s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon floating">🎬</div>
+                <div>
+                    <div>VIDEO MEME MAKER PRO</div>
+                    <div style="font-size: 0.9rem; color: var(--text-secondary);">Professional Edition</div>
+                </div>
+            </div>
+            <div>
+                <button class="btn btn-secondary">Export Project</button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="video-section">
+                <div class="glass-panel upload-area" id="uploadArea">
+                    <div class="upload-icon">📁</div>
+                    <div class="upload-text">
+                        <h3>Drag & Drop Video File</h3>
+                        <p>MP4, MOV, WebM or AVI formats • Max 500MB</p>
+                        <button class="btn btn-primary" style="margin-top: 20px;">Browse Files</button>
+                    </div>
+                    <input type="file" id="videoInput" accept="video/*" style="display: none;">
+                </div>
+
+                <div class="glass-panel video-container">
+                    <canvas id="videoCanvas"></canvas>
+                    <div class="watermark">MEME MAKER PRO</div>
+                </div>
+            </div>
+
+            <div class="glass-panel controls-panel">
+                <div class="control-group">
+                    <label class="control-label">Text Overlay</label>
+                    <input type="text" class="text-input" id="topText" placeholder="Enter top text...">
+                    <input type="text" class="text-input" style="margin-top: 10px;" id="bottomText" placeholder="Enter bottom text...">
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Text Style</label>
+                    <div class="slider-container">
+                        <span>Size:</span>
+                        <input type="range" class="slider" id="fontSize" min="20" max="80" value="48">
+                        <span class="slider-value" id="fontSizeValue">48</span>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
+                        <div>
+                            <label>Text Color</label>
+                            <input type="color" class="color-picker" id="textColor" value="#ffffff">
+                        </div>
+                        <div>
+                            <label>Outline Color</label>
+                            <input type="color" class="color-picker" id="strokeColor" value="#000000">
+                        </div>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" class="checkbox" id="textShadow" checked>
+                        <label for="textShadow">Add Shadow</label>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Video Effects</label>
+                    <div class="slider-container">
+                        <span>Brightness:</span>
+                        <input type="range" class="slider" id="brightness" min="0" max="200" value="100">
+                        <span class="slider-value" id="brightnessValue">100%</span>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <span>Contrast:</span>
+                        <input type="range" class="slider" id="contrast" min="0" max="200" value="100">
+                        <span class="slider-value" id="contrastValue">100%</span>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <span>Saturation:</span>
+                        <input type="range" class="slider" id="saturation" min="0" max="200" value="100">
+                        <span class="slider-value" id="saturationValue">100%</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">AI Enhancements</label>
+                    <div class="checkbox-group">
+                        <input type="checkbox" class="checkbox" id="autoCaption">
+                        <label for="autoCaption">Auto-Generate Captions</label>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" class="checkbox" id="sceneDetection">
+                        <label for="sceneDetection">Smart Scene Detection</label>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" class="checkbox" id="faceRecognition">
+                        <label for="faceRecognition">Face Recognition</label>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Export Options</label>
+                    <div class="export-section">
+                        <button class="glass-panel export-btn" id="exportGif">
+                            <div class="export-icon">🔄</div>
+                            <div>GIF</div>
+                        </button>
+                        <button class="glass-panel export-btn" id="exportMp4">
+                            <div class="export-icon">🎥</div>
+                            <div>MP4</div>
+                        </button>
+                        <button class="glass-panel export-btn" id="exportSocial">
+                            <div class="export-icon">📱</div>
+                            <div>Social</div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="features-section">
+            <div class="section-title">
+                <h2>Cutting-Edge Features</h2>
+                <p>Professional tools for creating viral content</p>
+            </div>
+            
+            <div class="grid grid-cols-3">
+                <div class="glass-panel feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI-Powered Captions</h3>
+                    <p>Automatically generate witty captions using our advanced AI algorithms</p>
+                </div>
+                
+                <div class="glass-panel feature-card">
+                    <div class="feature-icon">🎚️</div>
+                    <h3>Professional Effects</h3>
+                    <p>Apply cinematic filters, transitions, and color grading tools</p>
+                </div>
+                
+                <div class="glass-panel feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Face Recognition</h3>
+                    <p>Automatically detect faces for perfect meme text placement</p>
+                </div>
+                
+                <div class="glass-panel feature-card">
+                    <div class="feature-icon">🎞️</div>
+                    <h3>Multi-Track Editing</h3>
+                    <p>Add multiple video, audio, and text layers to your meme</p>
+                </div>
+                
+                <div class="glass-panel feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Performance Analytics</h3>
+                    <p>Predict meme virality with our engagement score algorithm</p>
+                </div>
+                
+                <div class="glass-panel feature-card">
+                    <div class="feature-icon">☁️</div>
+                    <h3>Cloud Rendering</h3>
+                    <p>Export 4K videos in seconds using our distributed rendering system</p>
+                </div>
+            </div>
+        </section>
+        
+        <footer class="footer">
+            <p>Video Meme Maker Pro © 2023 | Professional Edition</p>
+            <p>Powered by WebGL, WebAssembly, and TensorFlow.js</p>
+        </footer>
+    </div>
+
+    <div class="toast" id="toast">Video loaded successfully!</div>
+
+    <script>
+        class VideoMemeMakerPro {
+            constructor() {
+                this.video = null;
+                this.canvas = null;
+                this.ctx = null;
+                this.isPlaying = false;
+                this.animationFrame = null;
+                this.textStyles = {
+                    topText: "",
+                    bottomText: "",
+                    fontSize: 48,
+                    textColor: "#ffffff",
+                    strokeColor: "#000000",
+                    textShadow: true
+                };
+                
+                this.videoEffects = {
+                    brightness: 100,
+                    contrast: 100,
+                    saturation: 100
+                };
+                
+                this.aiFeatures = {
+                    autoCaption: false,
+                    sceneDetection: false,
+                    faceRecognition: false
+                };
+                
+                this.init();
+            }
+            
+            init() {
+                // Initialize elements
+                this.canvas = document.getElementById('videoCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.uploadArea = document.getElementById('uploadArea');
+                this.videoInput = document.getElementById('videoInput');
+                
+                // Set canvas size
+                this.setCanvasSize();
+                
+                // Setup event listeners
+                this.setupEventListeners();
+                
+                // Show welcome message
+                setTimeout(() => {
+                    this.showToast("Welcome to Video Meme Maker Pro!");
+                }, 1000);
+            }
+            
+            setCanvasSize() {
+                const container = this.canvas.parentElement;
+                this.canvas.width = container.clientWidth;
+                this.canvas.height = container.clientHeight;
+            }
+            
+            setupEventListeners() {
+                // Upload handling
+                this.uploadArea.addEventListener('click', () => this.videoInput.click());
+                this.uploadArea.addEventListener('dragover', this.handleDragOver.bind(this));
+                this.uploadArea.addEventListener('drop', this.handleDrop.bind(this));
+                this.videoInput.addEventListener('change', this.handleFileSelect.bind(this));
+                
+                // Text inputs
+                document.getElementById('topText').addEventListener('input', (e) => {
+                    this.textStyles.topText = e.target.value;
+                    this.updateCanvas();
+                });
+                
+                document.getElementById('bottomText').addEventListener('input', (e) => {
+                    this.textStyles.bottomText = e.target.value;
+                    this.updateCanvas();
+                });
+                
+                // Style controls
+                document.getElementById('fontSize').addEventListener('input', (e) => {
+                    this.textStyles.fontSize = parseInt(e.target.value);
+                    document.getElementById('fontSizeValue').textContent = this.textStyles.fontSize;
+                    this.updateCanvas();
+                });
+                
+                document.getElementById('textColor').addEventListener('change', (e) => {
+                    this.textStyles.textColor = e.target.value;
+                    this.updateCanvas();
+                });
+                
+                document.getElementById('strokeColor').addEventListener('change', (e) => {
+                    this.textStyles.strokeColor = e.target.value;
+                    this.updateCanvas();
+                });
+                
+                document.getElementById('textShadow').addEventListener('change', (e) => {
+                    this.textStyles.textShadow = e.target.checked;
+                    this.updateCanvas();
+                });
+                
+                // Video effects
+                document.getElementById('brightness').addEventListener('input', (e) => {
+                    this.videoEffects.brightness = parseInt(e.target.value);
+                    document.getElementById('brightnessValue').textContent = this.videoEffects.brightness + "%";
+                    this.updateCanvas();
+                });
+                
+                document.getElementById('contrast').addEventListener('input', (e) => {
+                    this.videoEffects.contrast = parseInt(e.target.value);
+                    document.getElementById('contrastValue').textContent = this.videoEffects.contrast + "%";
+                    this.updateCanvas();
+                });
+                
+                document.getElementById('saturation').addEventListener('input', (e) => {
+                    this.videoEffects.saturation = parseInt(e.target.value);
+                    document.getElementById('saturationValue').textContent = this.videoEffects.saturation + "%";
+                    this.updateCanvas();
+                });
+                
+                // AI features
+                document.getElementById('autoCaption').addEventListener('change', (e) => {
+                    this.aiFeatures.autoCaption = e.target.checked;
+                    if (this.aiFeatures.autoCaption) {
+                        this.generateAutoCaption();
+                    }
+                });
+                
+                document.getElementById('sceneDetection').addEventListener('change', (e) => {
+                    this.aiFeatures.sceneDetection = e.target.checked;
+                    if (this.aiFeatures.sceneDetection) {
+                        this.showToast("Scene detection activated");
+                    }
+                });
+                
+                document.getElementById('faceRecognition').addEventListener('change', (e) => {
+                    this.aiFeatures.faceRecognition = e.target.checked;
+                    if (this.aiFeatures.faceRecognition) {
+                        this.showToast("Face recognition enabled");
+                    }
+                });
+                
+                // Export buttons
+                document.getElementById('exportGif').addEventListener('click', () => {
+                    this.showToast("Exporting as GIF...");
+                    this.simulateExportProcess('GIF');
+                });
+                
+                document.getElementById('exportMp4').addEventListener('click', () => {
+                    this.showToast("Exporting as MP4...");
+                    this.simulateExportProcess('MP4');
+                });
+                
+                document.getElementById('exportSocial').addEventListener('click', () => {
+                    this.showToast("Exporting for social media...");
+                    this.simulateExportProcess('Social');
+                });
+                
+                // Window resize
+                window.addEventListener('resize', () => {
+                    this.setCanvasSize();
+                    this.updateCanvas();
+                });
+            }
+            
+            handleDragOver(e) {
+                e.preventDefault();
+                this.uploadArea.style.borderColor = "#7a4cff";
+                this.uploadArea.style.backgroundColor = "rgba(122, 76, 255, 0.1)";
+            }
+            
+            handleDrop(e) {
+                e.preventDefault();
+                this.uploadArea.style.borderColor = "";
+                this.uploadArea.style.backgroundColor = "";
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0 && files[0].type.startsWith('video/')) {
+                    this.loadVideo(files[0]);
+                }
+            }
+            
+            handleFileSelect(e) {
+                const file = e.target.files[0];
+                if (file && file.type.startsWith('video/')) {
+                    this.loadVideo(file);
+                }
+            }
+            
+            loadVideo(file) {
+                const url = URL.createObjectURL(file);
+                this.video = document.createElement('video');
+                this.video.src = url;
+                this.video.crossOrigin = 'anonymous';
+                this.video.muted = true;
+                this.video.loop = true;
+                
+                this.video.addEventListener('loadedmetadata', () => {
+                    this.setCanvasSize();
+                    this.video.play();
+                    this.isPlaying = true;
+                    this.animate();
+                    this.showToast("Video loaded successfully!");
+                });
+                
+                this.video.addEventListener('error', () => {
+                    this.showToast("Error loading video", true);
+                });
+            }
+            
+            updateCanvas() {
+                if (!this.video) return;
+                
+                // Clear canvas
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Apply video effects
+                this.ctx.filter = `
+                    brightness(${this.videoEffects.brightness}%)
+                    contrast(${this.videoEffects.contrast}%)
+                    saturate(${this.videoEffects.saturation}%)
+                `;
+                
+                // Draw video
+                const aspectRatio = this.video.videoWidth / this.video.videoHeight;
+                let renderHeight = this.canvas.height;
+                let renderWidth = this.canvas.height * aspectRatio;
+                
+                if (renderWidth > this.canvas.width) {
+                    renderWidth = this.canvas.width;
+                    renderHeight = this.canvas.width / aspectRatio;
+                }
+                
+                const x = (this.canvas.width - renderWidth) / 2;
+                const y = (this.canvas.height - renderHeight) / 2;
+                
+                this.ctx.drawImage(this.video, x, y, renderWidth, renderHeight);
+                
+                // Reset filter
+                this.ctx.filter = 'none';
+                
+                // Draw text
+                this.drawText();
+                
+                // Draw AI features
+                if (this.aiFeatures.faceRecognition) {
+                    this.drawFaceBoxes();
+                }
+            }
+            
+            drawText() {
+                const { topText, bottomText, fontSize, textColor, strokeColor, textShadow } = this.textStyles;
+                
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'middle';
+                this.ctx.font = `bold ${fontSize}px Impact, sans-serif`;
+                
+                // Text shadow
+                if (textShadow) {
+                    this.ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+                    this.ctx.shadowBlur = 4;
+                    this.ctx.shadowOffsetX = 2;
+                    this.ctx.shadowOffsetY = 2;
+                }
+                
+                // Draw top text
+                if (topText) {
+                    this.ctx.strokeStyle = strokeColor;
+                    this.ctx.lineWidth = fontSize / 10;
+                    this.ctx.strokeText(topText, this.canvas.width / 2, fontSize + 20);
+                    
+                    this.ctx.fillStyle = textColor;
+                    this.ctx.fillText(topText, this.canvas.width / 2, fontSize + 20);
+                }
+                
+                // Draw bottom text
+                if (bottomText) {
+                    this.ctx.strokeStyle = strokeColor;
+                    this.ctx.lineWidth = fontSize / 10;
+                    this.ctx.strokeText(bottomText, this.canvas.width / 2, this.canvas.height - fontSize - 20);
+                    
+                    this.ctx.fillStyle = textColor;
+                    this.ctx.fillText(bottomText, this.canvas.width / 2, this.canvas.height - fontSize - 20);
+                }
+                
+                // Reset shadow
+                this.ctx.shadowColor = 'transparent';
+                this.ctx.shadowBlur = 0;
+                this.ctx.shadowOffsetX = 0;
+                this.ctx.shadowOffsetY = 0;
+            }
+            
+            drawFaceBoxes() {
+                // Simulate face detection with random boxes
+                this.ctx.strokeStyle = '#ff6b6b';
+                this.ctx.lineWidth = 2;
+                
+                // Draw 1-3 random face boxes
+                const faceCount = Math.floor(Math.random() * 3) + 1;
+                for (let i = 0; i < faceCount; i++) {
+                    const width = 80 + Math.random() * 120;
+                    const height = width * (0.9 + Math.random() * 0.4);
+                    const x = (this.canvas.width - width) * Math.random();
+                    const y = (this.canvas.height - height) * Math.random();
+                    
+                    this.ctx.strokeRect(x, y, width, height);
+                    
+                    // Draw face recognition text
+                    this.ctx.fillStyle = '#ff6b6b';
+                    this.ctx.font = 'bold 14px sans-serif';
+                    this.ctx.fillText('Face Detected', x + width/2, y - 10);
+                }
+            }
+            
+            animate() {
+                if (!this.isPlaying || !this.video) return;
+                
+                this.updateCanvas();
+                this.animationFrame = requestAnimationFrame(() => this.animate());
+            }
+            
+            generateAutoCaption() {
+                // Simulate AI caption generation
+                const captions = [
+                    "When you realize it's Monday tomorrow",
+                    "That moment when everything clicks",
+                    "Me trying to understand this meme",
+                    "My brain at 3 AM",
+                    "When the WiFi goes down",
+                    "That awkward moment...",
+                    "My reaction to this video",
+                    "How it started vs how it's going",
+                    "Expectation vs reality",
+                    "Me waiting for the weekend"
+                ];
+                
+                const randomCaption = captions[Math.floor(Math.random() * captions.length)];
+                this.textStyles.topText = randomCaption;
+                document.getElementById('topText').value = randomCaption;
+                this.updateCanvas();
+                
+                this.showToast("AI-generated caption added!");
+            }
+            
+            simulateExportProcess(format) {
+                // Simulate an export process
+                const progressBar = document.createElement('div');
+                progressBar.style.position = 'fixed';
+                progressBar.style.top = '0';
+                progressBar.style.left = '0';
+                progressBar.style.height = '4px';
+                progressBar.style.background = '#7a4cff';
+                progressBar.style.width = '0%';
+                progressBar.style.transition = 'width 0.1s';
+                progressBar.style.zIndex = '1000';
+                document.body.appendChild(progressBar);
+                
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 2;
+                    progressBar.style.width = progress + '%';
+                    
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            document.body.removeChild(progressBar);
+                            this.showToast(`${format} exported successfully!`);
+                        }, 300);
+                    }
+                }, 50);
+            }
+            
+            showToast(message, isError = false) {
+                const toast = document.getElementById('toast');
+                toast.textContent = message;
+                toast.className = 'toast';
+                
+                if (isError) {
+                    toast.style.borderLeftColor = '#ff6b6b';
+                } else {
+                    toast.style.borderLeftColor = '#7a4cff';
+                }
+                
+                setTimeout(() => {
+                    toast.classList.add('show');
+                }, 10);
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+        }
+        
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = new VideoMemeMakerPro();
+            
+            // Add a demo video after a delay
+            setTimeout(() => {
+                if (!app.video) {
+                    app.video = document.createElement('video');
+                    app.video.src = 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+                    app.video.crossOrigin = 'anonymous';
+                    app.video.muted = true;
+                    app.video.loop = true;
+                    
+                    app.video.addEventListener('loadedmetadata', () => {
+                        app.setCanvasSize();
+                        app.video.play();
+                        app.isPlaying = true;
+                        app.animate();
+                    });
+                }
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
