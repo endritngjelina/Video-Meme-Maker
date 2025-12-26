@@ -1,0 +1,1644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Meme Studio Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            color: #2d3748;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-radius: 24px;
+            margin-top: 20px;
+            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.12), 
+                        0 0 0 1px rgba(255, 255, 255, 0.1),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.15), 
+                        0 0 0 1px rgba(255, 255, 255, 0.1),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-size: 300% 300%;
+            animation: gradientShift 8s ease infinite;
+            color: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        }
+
+        .header h1 {
+            font-size: 2.8em;
+            font-weight: 800;
+            margin-bottom: 12px;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            letter-spacing: -0.02em;
+            background: linear-gradient(45deg, #ffffff, #f0f8ff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+            font-weight: 400;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .video-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08), 
+                        0 0 0 1px rgba(255, 255, 255, 0.1),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .video-section:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12), 
+                        0 0 0 1px rgba(255, 255, 255, 0.1),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        }
+
+        .controls-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08), 
+                        0 0 0 1px rgba(255, 255, 255, 0.1),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-height: 85vh;
+            overflow-y: auto;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            scrollbar-width: thin;
+            scrollbar-color: rgba(102, 126, 234, 0.3) transparent;
+        }
+
+        .controls-panel:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12), 
+                        0 0 0 1px rgba(255, 255, 255, 0.1),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        }
+
+        .controls-panel::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .controls-panel::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+        }
+
+        .controls-panel::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 10px;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+
+        .controls-panel::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #5a6fd8, #6a4190);
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 20px;
+            padding: 50px;
+            text-align: center;
+            background: linear-gradient(135deg, #f8faff 0%, #e8f2ff 100%);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.6s;
+        }
+
+        .upload-area:hover::before {
+            left: 100%;
+        }
+
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: linear-gradient(135deg, #f0f8ff 0%, #e0f0ff 100%);
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
+        }
+
+        .upload-area.dragover {
+            border-color: #28a745;
+            background: linear-gradient(135deg, #f0fff4 0%, #dcf7e8 100%);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 24px 48px rgba(40, 167, 69, 0.2);
+        }
+
+        .upload-icon {
+            font-size: 4.5em;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .upload-area:hover .upload-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .canvas-container {
+            position: relative;
+            display: none;
+            text-align: center;
+            background: #000;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 
+                        0 0 0 1px rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .canvas-container:hover {
+            transform: scale(1.01);
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35), 
+                        0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        #videoCanvas {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            transition: filter 0.2s ease;
+        }
+
+        .timeline {
+            background: linear-gradient(135deg, #f8faff 0%, #f0f8ff 100%);
+            border-radius: 16px;
+            padding: 25px;
+            margin-top: 25px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        .timeline:hover {
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        }
+
+        .timeline-track {
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            margin: 15px 0;
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.2), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-track::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, 
+                rgba(255, 255, 255, 0.1) 0%, 
+                rgba(255, 255, 255, 0.05) 50%, 
+                rgba(255, 255, 255, 0.1) 100%);
+        }
+
+        .timeline-track:hover {
+            transform: scaleY(1.05);
+            box-shadow: 0 12px 24px rgba(102, 126, 234, 0.3), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .timeline-handle {
+            position: absolute;
+            top: 0;
+            width: 6px;
+            height: 100%;
+            background: linear-gradient(180deg, #ffffff, #f0f8ff);
+            cursor: ew-resize;
+            border-radius: 3px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.6),
+                        0 0 0 2px rgba(255, 255, 255, 0.8);
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+
+        .timeline-handle:hover {
+            width: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8),
+                        0 0 0 3px rgba(255, 255, 255, 0.9);
+        }
+
+        .timeline-handle:active {
+            width: 10px;
+            box-shadow: 0 0 25px rgba(102, 126, 234, 0.8),
+                        0 0 0 4px rgba(255, 255, 255, 1);
+        }
+
+        .control-group {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #fafbff 0%, #f0f8ff 100%);
+            border-radius: 16px;
+            border: 1px solid rgba(102, 126, 234, 0.08);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-group::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .control-group:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+            border-color: rgba(102, 126, 234, 0.15);
+        }
+
+        .control-group:hover::before {
+            opacity: 1;
+        }
+
+        .control-group h3 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .form-group {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid rgba(102, 126, 234, 0.1);
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1),
+                        0 4px 12px rgba(102, 126, 234, 0.15);
+            transform: translateY(-1px);
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            background: linear-gradient(135deg, #e2e8f0, #cbd5e0);
+            border-radius: 4px;
+            outline: none;
+            padding: 0;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        input[type="color"] {
+            padding: 4px;
+            height: 48px;
+            cursor: pointer;
+            border-radius: 12px;
+        }
+
+        input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 8px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-size: 300% 300%;
+            animation: gradientShift 6s ease infinite;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.25), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 32px rgba(102, 126, 234, 0.35), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(-1px) scale(1.01);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #718096 0%, #4a5568 100%);
+            box-shadow: 0 6px 20px rgba(113, 128, 150, 0.25);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #38a169 0%, #2f855a 50%, #68d391 100%);
+            box-shadow: 0 6px 20px rgba(56, 161, 105, 0.25);
+        }
+
+        .btn-full {
+            width: 100%;
+            margin: 12px 0;
+            justify-self: stretch;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn:disabled:hover {
+            transform: none;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.25);
+        }
+
+        .text-overlay {
+            position: absolute;
+            color: white;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            cursor: move;
+            user-select: none;
+            border: 2px dashed transparent;
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        .text-overlay.selected {
+            border-color: #ffff00;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .video-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .filter-btn {
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 2px solid rgba(102, 126, 234, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+            color: #4a5568;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .filter-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .filter-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .filter-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
+            border-color: rgba(102, 126, 234, 0.2);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: #667eea;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .filter-btn.active::before {
+            opacity: 1;
+        }
+
+        .export-options {
+            background: linear-gradient(135deg, #f8faff 0%, #e8f2ff 50%, #f0f8ff 100%);
+            border-radius: 16px;
+            padding: 25px;
+            margin-top: 25px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.05), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .export-options::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+        }
+
+        .export-options h3 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .container {
+                margin: 10px;
+                padding: 15px;
+                border-radius: 20px;
+            }
+            
+            .header {
+                padding: 20px;
+                border-radius: 16px;
+            }
+            
+            .header h1 {
+                font-size: 2.2em;
+            }
+
+            .header p {
+                font-size: 1em;
+            }
+
+            .video-section, .controls-panel {
+                padding: 20px;
+                border-radius: 16px;
+            }
+
+            .upload-area {
+                padding: 30px 20px;
+                border-radius: 16px;
+            }
+
+            .upload-icon {
+                font-size: 3.5em;
+            }
+
+            .control-group {
+                padding: 20px;
+                border-radius: 12px;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .video-controls {
+                gap: 12px;
+            }
+
+            .btn {
+                padding: 12px 20px;
+                font-size: 13px;
+            }
+
+            .filters-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 8px;
+            }
+
+            .timeline-track {
+                height: 60px;
+            }
+        }
+
+        /* Enhanced focus states for accessibility */
+        .btn:focus,
+        input:focus,
+        select:focus,
+        textarea:focus,
+        .filter-btn:focus {
+            outline: 3px solid rgba(102, 126, 234, 0.5);
+            outline-offset: 2px;
+        }
+
+        /* Improved visual feedback */
+        .form-group {
+            transition: all 0.2s ease;
+        }
+
+        .form-group:focus-within label {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        /* Enhanced text overlay styles */
+        .text-overlay {
+            position: absolute;
+            color: white;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8),
+                         0 0 8px rgba(0, 0, 0, 0.6);
+            cursor: move;
+            user-select: none;
+            border: 2px dashed transparent;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .text-overlay.selected {
+            border-color: #f093fb;
+            box-shadow: 0 0 20px rgba(240, 147, 251, 0.4);
+        }
+
+        .text-overlay:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Enhanced label styling */
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: color 0.2s ease;
+        }
+
+        /* Subtle animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .control-group {
+            animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .control-group:nth-child(1) { animation-delay: 0.1s; }
+        .control-group:nth-child(2) { animation-delay: 0.2s; }
+        .control-group:nth-child(3) { animation-delay: 0.3s; }
+        .control-group:nth-child(4) { animation-delay: 0.4s; }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: linear-gradient(135deg, #1a202c 0%, #2d3748 50%, #4a5568 100%);
+            }
+            
+            .container {
+                background: rgba(26, 32, 44, 0.95);
+                color: #e2e8f0;
+            }
+            
+            .video-section, .controls-panel {
+                background: rgba(45, 55, 72, 0.95);
+            }
+            
+            .control-group {
+                background: rgba(26, 32, 44, 0.8);
+            }
+            
+            label {
+                color: #cbd5e0;
+            }
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎬 Video Meme Studio Pro</h1>
+            <p>Professional-grade video meme creation with advanced editing capabilities</p>
+        </div>
+
+        <div class="main-grid">
+            <div class="video-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📹</div>
+                    <h3>Drop your video here or click to upload</h3>
+                    <p>Supports MP4, WebM, AVI, MOV formats</p>
+                    <input type="file" id="videoInput" accept="video/*" style="display: none;">
+                </div>
+
+                <div class="canvas-container" id="canvasContainer">
+                    <canvas id="videoCanvas"></canvas>
+                </div>
+
+                <div class="video-controls">
+                    <button class="btn" id="playPauseBtn" style="display: none;">⏸️ Pause</button>
+                    <button class="btn btn-secondary" id="muteBtn" style="display: none;">🔊 Mute</button>
+                    <button class="btn btn-success" id="exportBtn" style="display: none;">📥 Export Video</button>
+                </div>
+
+                <div class="timeline" id="timeline" style="display: none;">
+                    <h4>Timeline</h4>
+                    <div class="timeline-track" id="timelineTrack">
+                        <div class="timeline-handle" id="startHandle" style="left: 0%;"></div>
+                        <div class="timeline-handle" id="endHandle" style="left: 100%;"></div>
+                        <div class="timeline-handle" id="currentTimeHandle" style="left: 0%; background: #ff4444;"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                        <span id="startTime">00:00</span>
+                        <span id="currentTime">00:00</span>
+                        <span id="endTime">00:00</span>
+                    </div>
+                </div>
+
+                <div class="progress-container" id="progressContainer" style="display: none;">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+            </div>
+
+            <div class="controls-panel">
+                <div class="control-group">
+                    <h3>✏️ Text Overlays</h3>
+                    <div class="form-group">
+                        <label>Text Content</label>
+                        <textarea id="textContent" rows="2" placeholder="Enter your meme text..."></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Font Size</label>
+                            <input type="range" id="fontSize" min="16" max="120" value="48">
+                        </div>
+                        <div class="form-group">
+                            <label>Color</label>
+                            <input type="color" id="textColor" value="#ffffff">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Font Family</label>
+                            <select id="fontFamily">
+                                <option value="Impact">Impact</option>
+                                <option value="Arial Black">Arial Black</option>
+                                <option value="Comic Sans MS">Comic Sans MS</option>
+                                <option value="Times New Roman">Times New Roman</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Position</label>
+                            <select id="textPosition">
+                                <option value="top">Top</option>
+                                <option value="center">Center</option>
+                                <option value="bottom">Bottom</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-full" id="addTextBtn">Add Text Overlay</button>
+                    <button class="btn btn-secondary btn-full" id="clearTextBtn">Clear All Text</button>
+                </div>
+
+                <div class="control-group">
+                    <h3>🎨 Visual Effects</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Brightness</label>
+                            <input type="range" id="brightness" min="0" max="200" value="100">
+                        </div>
+                        <div class="form-group">
+                            <label>Contrast</label>
+                            <input type="range" id="contrast" min="0" max="200" value="100">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Saturation</label>
+                            <input type="range" id="saturation" min="0" max="200" value="100">
+                        </div>
+                        <div class="form-group">
+                            <label>Blur</label>
+                            <input type="range" id="blur" min="0" max="10" value="0">
+                        </div>
+                    </div>
+                    <div class="filters-grid">
+                        <button class="filter-btn" data-filter="none"><span>None</span></button>
+                        <button class="filter-btn" data-filter="grayscale"><span>B&W</span></button>
+                        <button class="filter-btn" data-filter="sepia"><span>Sepia</span></button>
+                        <button class="filter-btn" data-filter="vintage"><span>Vintage</span></button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>✂️ Crop & Trim</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Start Time (s)</label>
+                            <input type="number" id="startTimeInput" min="0" step="0.1" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label>End Time (s)</label>
+                            <input type="number" id="endTimeInput" min="0" step="0.1">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Speed</label>
+                            <select id="playbackSpeed">
+                                <option value="0.25">0.25x</option>
+                                <option value="0.5">0.5x</option>
+                                <option value="1" selected>1x</option>
+                                <option value="1.5">1.5x</option>
+                                <option value="2">2x</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Volume</label>
+                            <input type="range" id="volume" min="0" max="100" value="100">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="export-options">
+                    <h3>📤 Export Settings</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Quality</label>
+                            <select id="exportQuality">
+                                <option value="0.6">Standard</option>
+                                <option value="0.8" selected>High</option>
+                                <option value="1.0">Ultra</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Format</label>
+                            <select id="exportFormat">
+                                <option value="video/webm">WebM</option>
+                                <option value="video/mp4">MP4</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="tooltip">
+                        <button class="btn btn-success btn-full" id="exportVideoBtn">
+                            🚀 Export Final Video
+                        </button>
+                        <span class="tooltiptext">Export your meme with all effects applied</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class VideoMemeEditor {
+            constructor() {
+                this.video = null;
+                this.canvas = null;
+                this.ctx = null;
+                this.isPlaying = false;
+                this.textOverlays = [];
+                this.selectedText = null;
+                this.startTime = 0;
+                this.endTime = 0;
+                this.currentFilter = 'none';
+                this.effects = {
+                    brightness: 100,
+                    contrast: 100,
+                    saturation: 100,
+                    blur: 0
+                };
+                
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.canvas = document.getElementById('videoCanvas');
+                this.ctx = this.canvas.getContext('2d');
+            }
+
+            setupEventListeners() {
+                const uploadArea = document.getElementById('uploadArea');
+                const videoInput = document.getElementById('videoInput');
+
+                // Upload handling
+                uploadArea.addEventListener('click', () => videoInput.click());
+                uploadArea.addEventListener('dragover', this.handleDragOver.bind(this));
+                uploadArea.addEventListener('drop', this.handleDrop.bind(this));
+                videoInput.addEventListener('change', this.handleFileSelect.bind(this));
+
+                // Control listeners
+                document.getElementById('playPauseBtn').addEventListener('click', this.togglePlayPause.bind(this));
+                document.getElementById('muteBtn').addEventListener('click', this.toggleMute.bind(this));
+                document.getElementById('addTextBtn').addEventListener('click', this.addTextOverlay.bind(this));
+                document.getElementById('clearTextBtn').addEventListener('click', this.clearTextOverlays.bind(this));
+                document.getElementById('exportVideoBtn').addEventListener('click', this.exportVideo.bind(this));
+
+                // Effect controls
+                ['brightness', 'contrast', 'saturation', 'blur'].forEach(effect => {
+                    document.getElementById(effect).addEventListener('input', this.updateEffects.bind(this));
+                });
+
+                // Filter buttons
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.addEventListener('click', this.applyFilter.bind(this));
+                });
+
+                // Timeline controls
+                document.getElementById('startTimeInput').addEventListener('input', this.updateTrimming.bind(this));
+                document.getElementById('endTimeInput').addEventListener('input', this.updateTrimming.bind(this));
+                document.getElementById('playbackSpeed').addEventListener('change', this.updatePlaybackSpeed.bind(this));
+                document.getElementById('volume').addEventListener('input', this.updateVolume.bind(this));
+
+                // Canvas interactions
+                this.canvas.addEventListener('click', this.handleCanvasClick.bind(this));
+                this.canvas.addEventListener('mousedown', this.handleTextDragStart.bind(this));
+                document.addEventListener('mousemove', this.handleTextDrag.bind(this));
+                document.addEventListener('mouseup', this.handleTextDragEnd.bind(this));
+            }
+
+            handleDragOver(e) {
+                e.preventDefault();
+                e.currentTarget.classList.add('dragover');
+            }
+
+            handleDrop(e) {
+                e.preventDefault();
+                e.currentTarget.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    this.loadVideo(files[0]);
+                }
+            }
+
+            handleFileSelect(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    this.loadVideo(file);
+                }
+            }
+
+            loadVideo(file) {
+                const url = URL.createObjectURL(file);
+                this.video = document.createElement('video');
+                this.video.src = url;
+                this.video.crossOrigin = 'anonymous';
+                
+                this.video.addEventListener('loadedmetadata', () => {
+                    this.setupVideo();
+                });
+
+                this.video.addEventListener('timeupdate', () => {
+                    this.updateCanvas();
+                    this.updateTimeline();
+                });
+
+                this.video.load();
+            }
+
+            setupVideo() {
+                // Setup canvas dimensions
+                this.canvas.width = this.video.videoWidth;
+                this.canvas.height = this.video.videoHeight;
+                
+                // Show video controls
+                document.getElementById('canvasContainer').style.display = 'block';
+                document.getElementById('timeline').style.display = 'block';
+                document.querySelectorAll('.video-controls button').forEach(btn => {
+                    btn.style.display = 'inline-block';
+                });
+
+                // Set initial values
+                this.endTime = this.video.duration;
+                document.getElementById('endTimeInput').value = this.video.duration.toFixed(1);
+                document.getElementById('endTime').textContent = this.formatTime(this.video.duration);
+
+                this.updateCanvas();
+            }
+
+            togglePlayPause() {
+                if (this.isPlaying) {
+                    this.video.pause();
+                    document.getElementById('playPauseBtn').innerHTML = '▶️ Play';
+                    this.isPlaying = false;
+                } else {
+                    this.video.play();
+                    document.getElementById('playPauseBtn').innerHTML = '⏸️ Pause';
+                    this.isPlaying = true;
+                }
+            }
+
+            toggleMute() {
+                this.video.muted = !this.video.muted;
+                document.getElementById('muteBtn').innerHTML = this.video.muted ? '🔇 Unmute' : '🔊 Mute';
+            }
+
+            updateCanvas() {
+                if (!this.video || !this.ctx) return;
+
+                // Clear canvas
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // Apply filters and effects
+                this.ctx.filter = this.getFilterString();
+
+                // Draw video frame
+                this.ctx.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height);
+
+                // Reset filter for text overlays
+                this.ctx.filter = 'none';
+
+                // Draw text overlays
+                this.textOverlays.forEach(text => this.drawTextOverlay(text));
+            }
+
+            getFilterString() {
+                let filter = '';
+                filter += `brightness(${this.effects.brightness}%) `;
+                filter += `contrast(${this.effects.contrast}%) `;
+                filter += `saturate(${this.effects.saturation}%) `;
+                filter += `blur(${this.effects.blur}px) `;
+
+                switch (this.currentFilter) {
+                    case 'grayscale':
+                        filter += 'grayscale(100%) ';
+                        break;
+                    case 'sepia':
+                        filter += 'sepia(100%) ';
+                        break;
+                    case 'vintage':
+                        filter += 'sepia(50%) contrast(120%) brightness(110%) ';
+                        break;
+                }
+
+                return filter;
+            }
+
+            addTextOverlay() {
+                const content = document.getElementById('textContent').value.trim();
+                if (!content) return;
+
+                const fontSize = document.getElementById('fontSize').value;
+                const color = document.getElementById('textColor').value;
+                const fontFamily = document.getElementById('fontFamily').value;
+                const position = document.getElementById('textPosition').value;
+
+                let x, y;
+                switch (position) {
+                    case 'top':
+                        x = this.canvas.width / 2;
+                        y = parseInt(fontSize) + 20;
+                        break;
+                    case 'center':
+                        x = this.canvas.width / 2;
+                        y = this.canvas.height / 2;
+                        break;
+                    case 'bottom':
+                        x = this.canvas.width / 2;
+                        y = this.canvas.height - 20;
+                        break;
+                    default:
+                        x = this.canvas.width / 2;
+                        y = this.canvas.height / 2;
+                }
+
+                const textOverlay = {
+                    id: Date.now(),
+                    content,
+                    x,
+                    y,
+                    fontSize: parseInt(fontSize),
+                    color,
+                    fontFamily,
+                    selected: false
+                };
+
+                this.textOverlays.push(textOverlay);
+                this.updateCanvas();
+
+                // Clear input
+                document.getElementById('textContent').value = '';
+            }
+
+            drawTextOverlay(textOverlay) {
+                this.ctx.font = `bold ${textOverlay.fontSize}px ${textOverlay.fontFamily}`;
+                this.ctx.fillStyle = textOverlay.color;
+                this.ctx.strokeStyle = '#000';
+                this.ctx.lineWidth = 3;
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'middle';
+
+                // Draw text with outline
+                this.ctx.strokeText(textOverlay.content, textOverlay.x, textOverlay.y);
+                this.ctx.fillText(textOverlay.content, textOverlay.x, textOverlay.y);
+
+                // Draw selection indicator
+                if (textOverlay.selected) {
+                    const textMetrics = this.ctx.measureText(textOverlay.content);
+                    const width = textMetrics.width + 20;
+                    const height = textOverlay.fontSize + 20;
+                    
+                    this.ctx.strokeStyle = '#ffff00';
+                    this.ctx.lineWidth = 2;
+                    this.ctx.setLineDash([5, 5]);
+                    this.ctx.strokeRect(
+                        textOverlay.x - width / 2,
+                        textOverlay.y - height / 2,
+                        width,
+                        height
+                    );
+                    this.ctx.setLineDash([]);
+                }
+            }
+
+            handleCanvasClick(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                const x = (e.clientX - rect.left) * (this.canvas.width / rect.width);
+                const y = (e.clientY - rect.top) * (this.canvas.height / rect.height);
+
+                // Deselect all text
+                this.textOverlays.forEach(text => text.selected = false);
+
+                // Check if click is on any text overlay
+                for (let i = this.textOverlays.length - 1; i >= 0; i--) {
+                    const text = this.textOverlays[i];
+                    this.ctx.font = `bold ${text.fontSize}px ${text.fontFamily}`;
+                    const textMetrics = this.ctx.measureText(text.content);
+                    const width = textMetrics.width;
+                    const height = text.fontSize;
+
+                    if (x >= text.x - width / 2 && x <= text.x + width / 2 &&
+                        y >= text.y - height / 2 && y <= text.y + height / 2) {
+                        text.selected = true;
+                        this.selectedText = text;
+                        break;
+                    }
+                }
+
+                this.updateCanvas();
+            }
+
+            handleTextDragStart(e) {
+                if (this.selectedText) {
+                    this.isDragging = true;
+                    const rect = this.canvas.getBoundingClientRect();
+                    this.dragOffset = {
+                        x: (e.clientX - rect.left) * (this.canvas.width / rect.width) - this.selectedText.x,
+                        y: (e.clientY - rect.top) * (this.canvas.height / rect.height) - this.selectedText.y
+                    };
+                }
+            }
+
+            handleTextDrag(e) {
+                if (this.isDragging && this.selectedText) {
+                    const rect = this.canvas.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) * (this.canvas.width / rect.width);
+                    const y = (e.clientY - rect.top) * (this.canvas.height / rect.height);
+
+                    this.selectedText.x = x - this.dragOffset.x;
+                    this.selectedText.y = y - this.dragOffset.y;
+
+                    // Keep text within canvas bounds
+                    this.selectedText.x = Math.max(50, Math.min(this.canvas.width - 50, this.selectedText.x));
+                    this.selectedText.y = Math.max(this.selectedText.fontSize / 2, Math.min(this.canvas.height - this.selectedText.fontSize / 2, this.selectedText.y));
+
+                    this.updateCanvas();
+                }
+            }
+
+            handleTextDragEnd() {
+                this.isDragging = false;
+                this.dragOffset = null;
+            }
+
+            clearTextOverlays() {
+                this.textOverlays = [];
+                this.selectedText = null;
+                this.updateCanvas();
+            }
+
+            updateEffects() {
+                this.effects.brightness = document.getElementById('brightness').value;
+                this.effects.contrast = document.getElementById('contrast').value;
+                this.effects.saturation = document.getElementById('saturation').value;
+                this.effects.blur = document.getElementById('blur').value;
+                this.updateCanvas();
+            }
+
+            applyFilter(e) {
+                // Remove active class from all filter buttons
+                document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                
+                // Add active class to clicked button
+                e.target.classList.add('active');
+                
+                this.currentFilter = e.target.getAttribute('data-filter');
+                this.updateCanvas();
+            }
+
+            updateTrimming() {
+                const startTime = parseFloat(document.getElementById('startTimeInput').value);
+                const endTime = parseFloat(document.getElementById('endTimeInput').value);
+                
+                this.startTime = Math.max(0, startTime);
+                this.endTime = Math.min(this.video.duration, endTime);
+                
+                // Update timeline handles
+                const startPercent = (this.startTime / this.video.duration) * 100;
+                const endPercent = (this.endTime / this.video.duration) * 100;
+                
+                document.getElementById('startHandle').style.left = startPercent + '%';
+                document.getElementById('endHandle').style.left = endPercent + '%';
+                
+                // Update time displays
+                document.getElementById('startTime').textContent = this.formatTime(this.startTime);
+                document.getElementById('endTime').textContent = this.formatTime(this.endTime);
+            }
+
+            updatePlaybackSpeed() {
+                const speed = parseFloat(document.getElementById('playbackSpeed').value);
+                if (this.video) {
+                    this.video.playbackRate = speed;
+                }
+            }
+
+            updateVolume() {
+                const volume = parseFloat(document.getElementById('volume').value) / 100;
+                if (this.video) {
+                    this.video.volume = volume;
+                }
+            }
+
+            updateTimeline() {
+                if (!this.video) return;
+                
+                const currentPercent = (this.video.currentTime / this.video.duration) * 100;
+                document.getElementById('currentTimeHandle').style.left = currentPercent + '%';
+                document.getElementById('currentTime').textContent = this.formatTime(this.video.currentTime);
+                
+                // Check if we've reached the end time for trimming
+                if (this.video.currentTime >= this.endTime) {
+                    this.video.currentTime = this.startTime;
+                }
+            }
+
+            formatTime(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+
+            async exportVideo() {
+                if (!this.video) {
+                    alert('Please load a video first');
+                    return;
+                }
+
+                const exportBtn = document.getElementById('exportVideoBtn');
+                const progressContainer = document.getElementById('progressContainer');
+                const progressBar = document.getElementById('progressBar');
+                
+                exportBtn.innerHTML = '<span class="loading-spinner"></span> Exporting...';
+                exportBtn.disabled = true;
+                progressContainer.style.display = 'block';
+
+                try {
+                    const quality = parseFloat(document.getElementById('exportQuality').value);
+                    const format = document.getElementById('exportFormat').value;
+                    
+                    // Create a new canvas for export with consistent dimensions
+                    const exportCanvas = document.createElement('canvas');
+                    const exportCtx = exportCanvas.getContext('2d');
+                    exportCanvas.width = this.canvas.width;
+                    exportCanvas.height = this.canvas.height;
+
+                    // Setup MediaRecorder
+                    const stream = exportCanvas.captureStream(30); // 30 FPS
+                    const mediaRecorder = new MediaRecorder(stream, {
+                        mimeType: format,
+                        videoBitsPerSecond: 5000000 * quality // Adjust bitrate based on quality
+                    });
+
+                    const chunks = [];
+                    mediaRecorder.ondataavailable = (event) => {
+                        if (event.data.size > 0) {
+                            chunks.push(event.data);
+                        }
+                    };
+
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(chunks, { type: format });
+                        this.downloadVideo(blob);
+                        
+                        // Reset UI
+                        exportBtn.innerHTML = '🚀 Export Final Video';
+                        exportBtn.disabled = false;
+                        progressContainer.style.display = 'none';
+                    };
+
+                    mediaRecorder.start();
+
+                    // Export the video segment
+                    const originalTime = this.video.currentTime;
+                    this.video.currentTime = this.startTime;
+                    
+                    const duration = this.endTime - this.startTime;
+                    const frameRate = 30;
+                    const totalFrames = Math.floor(duration * frameRate);
+                    let currentFrame = 0;
+
+                    const renderFrame = () => {
+                        if (currentFrame >= totalFrames) {
+                            mediaRecorder.stop();
+                            this.video.currentTime = originalTime;
+                            return;
+                        }
+
+                        // Update progress
+                        const progress = (currentFrame / totalFrames) * 100;
+                        progressBar.style.width = progress + '%';
+
+                        // Clear and draw frame
+                        exportCtx.clearRect(0, 0, exportCanvas.width, exportCanvas.height);
+                        exportCtx.filter = this.getFilterString();
+                        exportCtx.drawImage(this.video, 0, 0, exportCanvas.width, exportCanvas.height);
+                        exportCtx.filter = 'none';
+
+                        // Draw text overlays
+                        this.textOverlays.forEach(text => {
+                            exportCtx.font = `bold ${text.fontSize}px ${text.fontFamily}`;
+                            exportCtx.fillStyle = text.color;
+                            exportCtx.strokeStyle = '#000';
+                            exportCtx.lineWidth = 3;
+                            exportCtx.textAlign = 'center';
+                            exportCtx.textBaseline = 'middle';
+                            exportCtx.strokeText(text.content, text.x, text.y);
+                            exportCtx.fillText(text.content, text.x, text.y);
+                        });
+
+                        currentFrame++;
+                        this.video.currentTime = this.startTime + (currentFrame / frameRate);
+                        
+                        // Continue to next frame
+                        setTimeout(renderFrame, 1000 / frameRate);
+                    };
+
+                    // Start rendering after video seeks
+                    this.video.addEventListener('seeked', renderFrame, { once: true });
+                    
+                } catch (error) {
+                    console.error('Export error:', error);
+                    alert('Export failed. Please try again.');
+                    exportBtn.innerHTML = '🚀 Export Final Video';
+                    exportBtn.disabled = false;
+                    progressContainer.style.display = 'none';
+                }
+            }
+
+            downloadVideo(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = `meme_video_${Date.now()}.webm`;
+                document.body.appendChild(a);
+                a.click();
+                URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            }
+        }
+
+        // Initialize the video meme editor when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new VideoMemeEditor();
+        });
+
+        // Timeline interaction handlers
+        document.addEventListener('DOMContentLoaded', () => {
+            const timelineTrack = document.getElementById('timelineTrack');
+            const startHandle = document.getElementById('startHandle');
+            const endHandle = document.getElementById('endHandle');
+            const currentTimeHandle = document.getElementById('currentTimeHandle');
+
+            let isDragging = false;
+            let dragTarget = null;
+
+            // Handle timeline clicks
+            timelineTrack.addEventListener('click', (e) => {
+                if (window.videoEditor && window.videoEditor.video) {
+                    const rect = timelineTrack.getBoundingClientRect();
+                    const percent = (e.clientX - rect.left) / rect.width;
+                    const time = percent * window.videoEditor.video.duration;
+                    window.videoEditor.video.currentTime = time;
+                }
+            });
+
+            // Handle dragging
+            [startHandle, endHandle, currentTimeHandle].forEach(handle => {
+                handle.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    dragTarget = handle;
+                    e.stopPropagation();
+                });
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging || !dragTarget || !window.videoEditor || !window.videoEditor.video) return;
+
+                const rect = timelineTrack.getBoundingClientRect();
+                const percent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                const time = percent * window.videoEditor.video.duration;
+
+                if (dragTarget === startHandle) {
+                    document.getElementById('startTimeInput').value = time.toFixed(1);
+                    window.videoEditor.updateTrimming();
+                } else if (dragTarget === endHandle) {
+                    document.getElementById('endTimeInput').value = time.toFixed(1);
+                    window.videoEditor.updateTrimming();
+                } else if (dragTarget === currentTimeHandle) {
+                    window.videoEditor.video.currentTime = time;
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+                dragTarget = null;
+            });
+        });
+
+        // Store reference for timeline interactions
+        let videoEditor;
+        document.addEventListener('DOMContentLoaded', () => {
+            videoEditor = new VideoMemeEditor();
+            window.videoEditor = videoEditor;
+        });
+    </script>
+</body>
+</html>
